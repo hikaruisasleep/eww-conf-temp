@@ -1,0 +1,6 @@
+; vars
+(defvar hover_vol false)
+(defvar hover_mic false)
+(defvar hover_mus false)
+(defvar vol_muted false)
+(defvar eww "/home/icarus/eww/target/release/eww -c ~/.config/eww")

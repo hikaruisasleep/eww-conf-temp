@@ -1,0 +1,210 @@
+; widgets
+(defwidget bar []
+     (box :class "bar"
+          :orientation "h"
+          (workspaces)
+          (music)
+          (power-time-cpu-mem-music)))
+
+(defwidget powermenu []
+     (box :class "powermenu"
+          :orientation "v"
+          (lock-power-restart)))
+
+
+(defwidget launchermenu []
+     (box :class "launchermenu"
+          :orientation "v"
+          (pfp)))
+
+(defwidget sep []
+  (box :orientation "h"
+       :valign "center"
+       (label :class "sepbar" :text "|")))
+
+(defwidget workspaces []
+  (literal :content workspc))
+
+(defwidget music []
+    (box :class "music"
+         :orientation "h"
+         :space-evenly true
+         :halign "center"
+         :valign "center"
+         :tooltip "music"
+         (eventbox :onhover "${EWW_EXECUTABLE} update hover_mus=true"
+                   :onhoverlost "${EWW_EXECUTABLE} update hover_mus=false"
+                   (box :orientation "h"
+                        :space-evenly "false"
+                        :halign "end"
+                        :valign "center"
+                        (label :class "music-label"
+                               :text song_artist
+                               :wrap "true")
+                        (revealer :reveal hover_mus
+                                  :transition "slideleft"
+                                  :duration "0.5"
+                                  (box :orientation "h"
+                                       :space-evenly "false"
+                                       :halign "end"
+                                       :valign "center"
+                                       (button :class "song_btn_prev" :onclick "/home/icarus/.config/eww/scripts/music_info --prev" "")
+                                       (button :class "song_btn_play" :onclick "/home/icarus/.config/eww/scripts/music_info --toggle" song_status)
+                                       (button :class "song_btn_next" :onclick "/home/icarus/.config/eww/scripts/music_info --next" "")))))))
+
+(defwidget menu []
+     (box :class "menu-box"
+     :orientation "h"
+     :halign "start"
+     :valign "center"
+     :space-evenly "false"
+     (button :onclick "/home/icarus/.config/eww/scripts/pop-launcher"
+             "")))
+
+(defwidget vol []
+    (box :class "volume"
+         :halign "start"
+         :valign "center"
+         :orientation "h"
+         :space-evenly "false"
+         (box :class "vol"
+              (eventbox :onhover "${EWW_EXECUTABLE} update hover_vol=true"
+                        :onhoverlost "${EWW_EXECUTABLE} update hover_vol=false"
+                        :onrightclick "/home/icarus/.config/eww/scripts/mute_toggle"
+                        (box :orientation "h"
+                             :space-evenly "false"
+                             :halign "start"
+                             :valign "center"
+                             (label :text {vol_muted ? "婢" : ""}
+                                    :wrap "true"
+                                    :class "vol-icon")
+                                    (revealer :reveal {!vol_muted && hover_vol ? "true" : "false"}
+                                              :transition "slideright"
+                                              :duration "0.5"
+                                              (scale :class "volbar"
+                                                     :orientation "h"
+                                                     :value volume_percent
+                                                     :tooltip "volume is on ${volume_percent}%"
+                                                     :min 0
+                                                     :max 30
+                                                     :onchange "amixer -D default sset Master {}%")))))))
+
+(defwidget cpu-and-mem []
+    (box :class "cpu-and-mem"
+         :orientation "h"
+         :halign "end"
+         :valign "center"
+         :space-evenly "false"
+         (circular-progress :class "cpu"
+                            :tooltip "using ${cpu}% cpu"
+                            :value cpu
+                            :thickness 12)
+         (circular-progress :class "mem"
+                            :tooltip "using ${memory}% ram"
+                            :value memory
+                            :thickness 12)))
+
+(defwidget power-time-cpu-mem-music []
+    (box :class "time-cpu-mem"
+         :halign "end"
+         :valign "center"
+         :space-evenly "false"
+         :orientation "h"
+         (vol)
+         (sep)
+         (cpu-and-mem)
+         (sep)
+         (label :text "${date}   "
+                :class "time-label"
+                :halign "end"
+                :valign "center"
+                :space-evenly "false"
+                :tooltip "time"
+                :orientation "h")
+         (label :text time0
+                :class "time-label"
+                :halign "end"
+                :valign "center"
+                :space-evenly "false"
+                :tooltip "time"
+                :orientation "h"
+                )
+          (sep)
+          (menu)))
+
+(defwidget power []
+     (box :orientation "h"
+          :halign "end"
+          :valign "center"
+          :space-evenly "false"
+          (button :onclick "/home/icarus/.config/eww/scripts/pop-power"
+                  :class "power-icon"
+                  :tooltip "power off"
+                  "⏻")))
+
+(defwidget lock-power-restart []
+     (box :orientation "v"
+          :halign "center"
+          :valign "center"
+          :space-evenly "false"
+          :spacing 70
+          (box :orientation "v"
+               :halign "center"
+               :valign "center"
+               :space-evenly "false"
+               (button :onclick "systemctl reboot"
+                    :class "restart-btn"
+                    :tooltip "restart"
+                    ""))
+          (box :orientation "v"
+               :halign "center"
+               :valign "center"
+               :space-evenly "false"
+               (button :onclick "/home/okk/.config/herbstluftwm/bin/herblock.sh"
+                    :class "lock-btn"
+                    :tooltip "lock"
+                    ""))
+          (box :orientation "v"
+               :halign "center"
+               :valign "center"
+               :space-evenly "false"
+               (button :onclick "systemctl poweroff"
+                       :class "power-btn"
+                       :tooltip "power off"
+                       ""))))
+
+(defwidget pfp []
+     (box :orientation "v"
+          :space-evenly "false"
+          :halign "center"
+          :valign "start"
+          (image :path "/home/icarus/.config/eww/assets/pfp.png"
+                 :class "launcher-icon"
+                 :image-width 50
+                 :image-height 50)
+          (label :text "okklol"
+                 :class "launcher-pfp-label")
+          (label :text "${time0} - ${date}"
+                 :class "launcher-pfp-label2")
+          (box :orientation "h"
+               :space-evenly true
+               (button :class "launcher-btn"
+                       :onclick "discord & disown"
+                       :tooltip "discord"
+                       "ﭮ")
+               (button :class "launcher-btn"
+                       :onclick "spotify & disown"
+                       :tooltip "spotify"
+                       "")
+               (button :class "launcher-btn"
+                       :onclick "steam & disown"
+                       :tooltip "steam"
+                       "")
+               (button :class "launcher-btn"
+                       :onclick "firefox -P default-release & disown"
+                       :tooltip "firefox non-private"
+                       "")
+               (button :class "launcher-btn"
+                       :onclick "code & disown"
+                       :tooltip "vscode"
+                       "﬏"))))
